@@ -1,17 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:my_project_pui/dashboardpage.dart';
+import 'waitingotp.dart';
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+class SignupPage extends StatefulWidget {
+  const SignupPage({super.key});
 
   @override
-  _LoginPageState createState() => _LoginPageState();
+  _SignupPageState createState() => _SignupPageState();
 }
 
-class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMixin {
+class _SignupPageState extends State<SignupPage> with SingleTickerProviderStateMixin {
+  final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+
   bool _isLoading = false;
   late AnimationController _controller;
   late Animation<double> _animation;
@@ -29,16 +31,20 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
   @override
   void dispose() {
     _controller.dispose();
+    _usernameController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
     super.dispose();
   }
 
-  void _login() async {
+  void _signup() async {
     final email = _emailController.text.trim();
     final password = _passwordController.text;
+    final username = _usernameController.text.trim();
 
-    if (email.isEmpty || password.isEmpty) {
+    if (email.isEmpty || password.isEmpty || username.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Email atau Password tidak boleh kosong")),
+        const SnackBar(content: Text("Semua field wajib diisi")),
       );
       return;
     }
@@ -48,16 +54,17 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
     });
 
     try {
-      final response = await Supabase.instance.client.auth.signInWithPassword(
+      final response = await Supabase.instance.client.auth.signUp(
         email: email,
         password: password,
+        data: {'username': username},
       );
 
       if (response.user != null) {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) => DashboardPage(username: email),
+            builder: (context) => WaitingConfirmationPage(email: email),
           ),
         );
       }
@@ -92,6 +99,8 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                   child: Image.asset('assets/logoklinik.png', height: 200),
                 ),
                 const SizedBox(height: 25),
+                _buildTextField(_usernameController, 'Username', false),
+                const SizedBox(height: 20),
                 _buildTextField(_emailController, 'Email', false),
                 const SizedBox(height: 20),
                 _buildTextField(_passwordController, 'Password', true),
@@ -104,17 +113,17 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                     ),
                     backgroundColor: const Color.fromARGB(255, 7, 89, 253),
                   ),
-                  onPressed: _isLoading ? null : _login,
+                  onPressed: _isLoading ? null : _signup,
                   child: _isLoading
                       ? const CircularProgressIndicator(color: Colors.white)
-                      : const Text('Login', style: TextStyle(fontSize: 18, color: Colors.white)),
+                      : const Text('Daftar', style: TextStyle(fontSize: 18, color: Colors.white)),
                 ),
                 TextButton(
                   onPressed: () {
-                    Navigator.pushNamed(context, '/signup');
+                    Navigator.pushNamed(context, '/');
                   },
                   child: const Text(
-                    'Daftar Akun',
+                    'Sudah Punya Akun?',
                     style: TextStyle(color: Colors.blue, fontSize: 16),
                   ),
                 ),

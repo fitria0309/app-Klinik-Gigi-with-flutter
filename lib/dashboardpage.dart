@@ -1,189 +1,305 @@
 import 'package:flutter/material.dart';
-import 'package:my_project_pui/loginpage.dart';
-import 'package:my_project_pui/payment.dart';
+import 'package:my_project_pui/paymentpage.dart';
+import 'package:my_project_pui/profile.dart';
+import 'package:my_project_pui/chatpage.dart';
+import 'dart:async';
 
 class DashboardPage extends StatefulWidget {
   final String username;
   const DashboardPage({super.key, required this.username});
 
   @override
-  _DashboardPageState createState() => _DashboardPageState();
+  State<DashboardPage> createState() => _DashboardPageState();
 }
 
 class _DashboardPageState extends State<DashboardPage> {
+  int _selectedIndex = 0;
+  late PageController _pageController;
+  late Timer _timer;
+  int _currentBannerIndex = 0;
+  bool _showGreeting = true;
+
   final List<Map<String, dynamic>> services = [
     {
       'name': 'Konsultasi dengan Dokter Gigi',
-      'price': 50000,
-      'image': 'assets/konsultasi.jpg'
+      'price': [50000],
+      'options': ['Konsultasi Langsung'],
+      'image': 'assets/konsultasi.jpg',
+      'description': 'Pilih layanan konsultasi dengan dokter gigi.'
     },
     {
-      'name': 'Pembersihan Karang Gigi',
-      'price': 150000,
-      'image': 'assets/pembersihan.jpg'
+      'name': 'Pembuatan Gigi Tiruan',
+      'price': [200000, 2500000],
+      'options': ['Acrylik', 'Porcelain'],
+      'image': 'assets/gigitiruan.jpg',
+      'description': 'Pilih bahan untuk pembuatan gigi tiruan.'
     },
     {
-      'name': 'Penambalan Gigi',
-      'price': 200000,
-      'image': 'assets/tambal.jpg'
+      'name': 'Tambalan Gigi',
+      'price': [100000, 150000],
+      'options': ['Depan', 'Belakang'],
+      'image': 'assets/tambal.jpg',
+      'description': 'Pilih jenis tambalan gigi.'
+    },
+    {
+      'name': 'Scalling',
+      'price': [150000],
+      'options': ['Scalling'],
+      'image': 'assets/pembersihan.jpg',
+      'description': 'Pembersihan karang gigi (scalling).'
     },
     {
       'name': 'Pencabutan Gigi',
-      'price': 250000,
-      'image': 'assets/cabut.jpg'
+      'price': [100000],
+      'options': ['Biasa'],
+      'image': 'assets/cabut.jpg',
+      'description': 'Pencabutan gigi biasa.'
+    },
+    {
+      'name': 'Pemasangan Kawat Gigi',
+      'price': [4000000],
+      'options': ['Pemasangan Kawat Gigi'],
+      'image': 'assets/kawat.jpg',
+      'description': 'Layanan pemasangan kawat gigi.'
     },
   ];
 
-  final List<Map<String, dynamic>> _bookingList = [];
+  @override
+  void initState() {
+    super.initState();
 
-  void _bookService(Map<String, dynamic> service) {
-    setState(() {
-      _bookingList.add(service);
+    _pageController = PageController(initialPage: 0);
+    _timer = Timer.periodic(const Duration(seconds: 3), (Timer timer) {
+      if (_pageController.hasClients) {
+        _currentBannerIndex = (_currentBannerIndex + 1) % 3;
+        _pageController.animateToPage(
+          _currentBannerIndex,
+          duration: const Duration(milliseconds: 400),
+          curve: Curves.easeInOut,
+        );
+      }
     });
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text("${service['name']} ditambahkan ke daftar layanan.")),
-    );
+
+    Timer(const Duration(seconds: 6), () {
+      if (mounted) {
+        setState(() {
+          _showGreeting = false;
+        });
+      }
+    });
   }
 
-  void _goToBookingList() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => BookingListPage(bookings: _bookingList),
+  @override
+  void dispose() {
+    _pageController.dispose();
+    _timer.cancel();
+    super.dispose();
+  }
+
+  void _onBottomNavTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
+
+  Widget _buildHome() {
+    final List<String> bannerImages = [
+      'assets/banner1.jpg',
+      'assets/banner2.jpg',
+      'assets/banner3.jpg',
+    ];
+
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          // Banner Slider
+          Container(
+            margin: const EdgeInsets.all(16),
+            height: 200,
+            child: Stack(
+              alignment: Alignment.bottomCenter,
+              children: [
+                PageView.builder(
+                  controller: _pageController,
+                  itemCount: bannerImages.length,
+                  onPageChanged: (index) {
+                    setState(() {
+                      _currentBannerIndex = index;
+                    });
+                  },
+                  itemBuilder: (context, index) {
+                    return Container(
+                      margin: const EdgeInsets.symmetric(horizontal: 5),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(16),
+                        color: Colors.grey[300],
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(16),
+                        child: Image.asset(
+                          bannerImages[index],
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    );
+                  },
+                ),
+                
+                // Dot Indicator
+                Positioned(
+                  bottom: 10,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: List.generate(bannerImages.length, (index) {
+                      return Container(
+                        margin: const EdgeInsets.symmetric(horizontal: 4),
+                        width: _currentBannerIndex == index ? 12 : 8,
+                        height: _currentBannerIndex == index ? 12 : 8,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: _currentBannerIndex == index
+                              ? const Color.fromARGB(255, 139, 187, 227)
+                              : const Color.fromARGB(255, 207, 205, 205),
+                        ),
+                      );
+                    }),
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          // Judul
+          Container(
+            alignment: Alignment.centerLeft,
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: const Text(
+              "Pilih Layanan Kami",
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+          ),
+          const SizedBox(height: 12),
+
+          // Grid Services
+          GridView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            itemCount: services.length,
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              childAspectRatio: 3 / 4,
+              crossAxisSpacing: 12,
+              mainAxisSpacing: 12,
+            ),
+            itemBuilder: (context, index) {
+              final service = services[index];
+              return GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    PageRouteBuilder(
+                      pageBuilder: (_, __, ___) =>
+                          PaymentPage(service: service),
+                      transitionsBuilder: (_, anim, __, child) =>
+                          FadeTransition(opacity: anim, child: child),
+                    ),
+                  );
+                },
+                child: Card(
+                  elevation: 5,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16)),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Expanded(
+                        child: ClipRRect(
+                          borderRadius:
+                              const BorderRadius.vertical(top: Radius.circular(16)),
+                          child: Image.asset(service['image'], fit: BoxFit.cover),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8),
+                        child: Column(
+                          children: [
+                            Text(
+                              service['name'],
+                              style:
+                                  const TextStyle(fontWeight: FontWeight.bold),
+                              textAlign: TextAlign.center,
+                            ),
+                            const SizedBox(height: 6),
+                            // Harga tidak ditampilkan di sini
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+          const SizedBox(height: 20),
+        ],
       ),
     );
   }
 
-  void _showLogoutConfirmation(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text("Konfirmasi Keluar"),
-          content: const Text("Apakah Anda yakin ingin keluar dari akun?"),
-          actions: [
-            TextButton(
-              child: const Text("Batal"),
-              onPressed: () => Navigator.of(context).pop(),
-            ),
-            TextButton(
-              child: const Text("Keluar"),
-              onPressed: () {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const LoginPage(),
-                  ),
-                );
-              },
-            ),
-          ],
-        );
-      },
-    );
+  Widget _buildBooking() {
+    return const Center(
+        child: Text('Daftar Booking Anda akan muncul di sini!'));
+  }
+
+  Widget _buildProfile() {
+    return ProfilePage(username: widget.username);
   }
 
   @override
   Widget build(BuildContext context) {
+    const Color primaryColor = Color(0xFF7B1FA2);
+    List<Widget> pages = [_buildHome(), _buildBooking(), _buildProfile()];
+
     return Scaffold(
       appBar: AppBar(
-        title: Text('Halo, ${widget.username}'),
+        automaticallyImplyLeading: false,
+        title: _showGreeting
+            ? Text('Halo, ${widget.username}')
+            : Image.asset(
+                'assets/logoklinik2.png',
+                height: 150,
+              ),
+        backgroundColor: Colors.white,
+        foregroundColor: primaryColor,
+        elevation: 0,
         actions: [
           IconButton(
-            icon: const Icon(Icons.schedule),
-            onPressed: _goToBookingList,
-          ),
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: () => _showLogoutConfirmation(context),
+            icon: const Icon(Icons.message_outlined),
+            tooltip: 'Pesan',
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const ChatPage(),
+                ),
+              );
+            },
           ),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: GridView.builder(
-          itemCount: services.length,
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            childAspectRatio: 3 / 4,
-            mainAxisSpacing: 12,
-            crossAxisSpacing: 12,
-          ),
-          itemBuilder: (context, index) {
-            final service = services[index];
-            return Card(
-              elevation: 4,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Expanded(
-                    child: ClipRRect(
-                      borderRadius: const BorderRadius.vertical(top: Radius.circular(15)),
-                      child: Image.asset(service['image'], fit: BoxFit.cover),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      children: [
-                        Text(
-                          service['name'],
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                        ),
-                        const SizedBox(height: 5),
-                        Text(
-                          'Rp ${service['price']}',
-                          style: const TextStyle(color: Colors.grey),
-                        ),
-                        const SizedBox(height: 8),
-                        ElevatedButton(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => PaymentPage(service: service),
-                              ),
-                            );
-                          },
-                          child: const Text('Pesan Layanan'),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            );
-          },
-        ),
+      body: pages[_selectedIndex],
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _selectedIndex,
+        onTap: _onBottomNavTapped,
+        selectedItemColor: primaryColor,
+        items: const [
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Beranda'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.calendar_today), label: 'Booking'),
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profil'),
+        ],
       ),
-    );
-  }
-}
-
-class BookingListPage extends StatelessWidget {
-  final List<Map<String, dynamic>> bookings;
-
-  const BookingListPage({super.key, required this.bookings});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Daftar Layanan Anda')),
-      body: bookings.isEmpty
-          ? const Center(child: Text('Belum ada layanan yang dipesan.'))
-          : ListView.builder(
-              itemCount: bookings.length,
-              itemBuilder: (context, index) {
-                final item = bookings[index];
-                return ListTile(
-                  leading: Image.asset(item['image'], width: 50, fit: BoxFit.cover),
-                  title: Text(item['name']),
-                  subtitle: Text('Rp ${item['price']}'),
-                );
-              },
-            ),
     );
   }
 }
