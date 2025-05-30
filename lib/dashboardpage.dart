@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:my_project_pui/paymentpage.dart';
 import 'package:my_project_pui/profile.dart';
+import 'package:my_project_pui/boking.dart';
 import 'package:my_project_pui/chatpage.dart';
 import 'dart:async';
 
@@ -248,8 +249,7 @@ class _DashboardPageState extends State<DashboardPage> {
   }
 
   Widget _buildBooking() {
-    return const Center(
-        child: Text('Daftar Booking Anda akan muncul di sini!'));
+    return BookingMenu();
   }
 
   Widget _buildProfile() {
@@ -303,3 +303,5 @@ class _DashboardPageState extends State<DashboardPage> {
     );
   }
 }
+
+

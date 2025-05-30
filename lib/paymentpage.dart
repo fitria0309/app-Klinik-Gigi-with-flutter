@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:my_project_pui/payment.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class PaymentPage extends StatefulWidget {
   final Map<String, dynamic> service;
@@ -63,35 +63,55 @@ class _PaymentPageState extends State<PaymentPage> {
               ),
             const SizedBox(height: 16),
 
-            // Menampilkan Harga dengan Format Rupiah
+            // Menampilkan Harga
             Text(
               'Harga: ${formatRupiah(selectedPrice)}',
               style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 24),
 
-            // Tombol untuk ke Halaman Pembayaran
+            // Tombol Booking
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: () {
+                onPressed: () async {
                   final selectedOption = service['options'][_selectedOptionIndex];
+                  final selectedPrice = service['price'][_selectedOptionIndex];
 
-                  // Tambahkan info tambahan ke dalam map service
-                  final updatedService = Map<String, dynamic>.from(service);
-                  updatedService['option'] = selectedOption;
-                  updatedService['price'] = selectedPrice;
+                  final user = Supabase.instance.client.auth.currentUser;
 
-                  Navigator.push(
-                    context,
-                    PageRouteBuilder(
-                      pageBuilder: (_, __, ___) => Payment(),
-                      transitionsBuilder: (_, anim, __, child) =>
-                          FadeTransition(opacity: anim, child: child),
-                    ),
-                  );
+                  if (user == null) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('User belum login')),
+                    );
+                    return;
+                  }
+
+                  final bookingData = {
+                    'user_id': user.id,
+                    'service_name': service['name'],
+                    'option': selectedOption,
+                    'price': selectedPrice,
+                    'status': 'Menunggu Pembayaran'
+                  };
+
+                  try {
+                    await Supabase.instance.client.from('boking').insert(bookingData);
+
+                    // Tampilkan pesan sukses
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Booking berhasil')),
+                    );
+
+                    // Kembali ke halaman sebelumnya
+                    Navigator.pop(context);
+                  } catch (e) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Gagal booking: $e')),
+                    );
+                  }
                 },
-                child: const Text('Lanjut ke Pembayaran'),
+                child: const Text('Booking'),
               ),
             ),
           ],

@@ -38,50 +38,60 @@ class _SignupPageState extends State<SignupPage> with SingleTickerProviderStateM
   }
 
   void _signup() async {
-    final email = _emailController.text.trim();
-    final password = _passwordController.text;
-    final username = _usernameController.text.trim();
+  final email = _emailController.text.trim();
+  final password = _passwordController.text;
+  final username = _usernameController.text.trim();
 
-    if (email.isEmpty || password.isEmpty || username.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Semua field wajib diisi")),
-      );
-      return;
-    }
-
-    setState(() {
-      _isLoading = true;
-    });
-
-    try {
-      final response = await Supabase.instance.client.auth.signUp(
-        email: email,
-        password: password,
-        data: {'username': username},
-      );
-
-      if (response.user != null) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => WaitingConfirmationPage(email: email),
-          ),
-        );
-      }
-    } on AuthException catch (error) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(error.message)),
-      );
-    } catch (_) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Terjadi kesalahan. Coba lagi.")),
-      );
-    } finally {
-      setState(() {
-        _isLoading = false;
-      });
-    }
+  if (email.isEmpty || password.isEmpty || username.isEmpty) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("Semua field wajib diisi")),
+    );
+    return;
   }
+
+  setState(() {
+    _isLoading = true;
+  });
+
+  try {
+    final response = await Supabase.instance.client.auth.signUp(
+      email: email,
+      password: password,
+      data: {'username': username},
+    );
+
+    final user = response.user;
+
+    if (user != null) {
+      // Tambahkan ke tabel akun_pasien
+      await Supabase.instance.client.from('akun_pasien').insert({
+        'uuid': user.id,
+        'email': email,
+        'username': username,
+      });
+
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => WaitingConfirmationPage(email: email),
+        ),
+      );
+    }
+  } on AuthException catch (error) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(error.message)),
+    );
+  } catch (e) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("Terjadi kesalahan. Coba lagi.")),
+    );
+    debugPrint('Signup error: $e');
+  } finally {
+    setState(() {
+      _isLoading = false;
+    });
+  }
+}
 
   @override
   Widget build(BuildContext context) {

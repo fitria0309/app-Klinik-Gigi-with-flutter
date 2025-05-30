@@ -54,13 +54,28 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
       );
 
       if (response.user != null) {
+      try {
+        final pasienData = await Supabase.instance.client
+            .from('akun_pasien')
+            .select('username')
+            .eq('email', email)
+            .single();
+
+        final username = pasienData['username'];
+
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) => DashboardPage(username: email),
+            builder: (context) => DashboardPage(username: username),
           ),
         );
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Gagal mengambil data admin.")),
+        );
       }
+    }
+
     } on AuthException catch (error) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(error.message)),
