@@ -96,7 +96,7 @@ class _PaymentPageState extends State<PaymentPage> {
                   };
 
                   try {
-                    await Supabase.instance.client.from('boking').insert(bookingData);
+                    await Supabase.instance.client.from('booking').insert(bookingData);
 
                     // Tampilkan pesan sukses
                     ScaffoldMessenger.of(context).showSnackBar(
