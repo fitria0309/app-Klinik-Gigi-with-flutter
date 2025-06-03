@@ -6,8 +6,8 @@ import 'package:my_project_pui/chatpage.dart';
 import 'dart:async';
 
 class DashboardPage extends StatefulWidget {
-  final String username;
   const DashboardPage({super.key, required this.username});
+  final String username;
 
   @override
   State<DashboardPage> createState() => _DashboardPageState();

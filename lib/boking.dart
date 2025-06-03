@@ -62,8 +62,7 @@ class _BookingMenuState extends State<BookingMenu> {
       case 'menunggu pembayaran':
       case 'menunggu konfirmasi':
         return Colors.red;
-      case 'selesai':
-      case 'sudah dikonfirmasi':
+      case 'pembayaran berhasil':
         return Colors.green;
       default:
         return Colors.grey;
