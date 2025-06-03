@@ -29,8 +29,36 @@ def create_invoice():
         return jsonify({'error': str(e)}), 500
 
 
-@app.route('/', methods=['POST'])
+@app.route('/')
 def login():
+    if request.method == 'POST':
+        email = request.form['email']
+        password = request.form['password']
+        try:
+            user = supabase.auth.sign_in_with_password({"email": email, "password": password})
+            if user.user is None:
+                flash('Login gagal: Email atau password salah.', 'login_danger')
+                return redirect(url_for('login'))
+
+            session['user'] = user.user.email
+
+            # Ambil data dari tabel admin berdasarkan email
+            response = supabase.table('admin').select('nama, foto').eq('email', email).execute()
+            admin_data = response.data[0] if response.data else None
+
+            if admin_data:
+                session['nama_admin'] = admin_data['nama']
+                session['foto_admin'] = admin_data['foto']
+            else:
+                flash('Data admin tidak ditemukan.', 'admin_danger')
+
+            flash('Login berhasil!', 'login_success')
+            return redirect(url_for('admin'))
+
+        except Exception as e:
+            flash('Login gagal: ' + str(e), 'login_danger')
+            return redirect(url_for('login'))
+    return render_template('login.html')
     return render_template('login.html')
 @app.route('/dashboard', methods=['POST'])
 def dashboard():
