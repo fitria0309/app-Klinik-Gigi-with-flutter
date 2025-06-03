@@ -1,6 +1,6 @@
 # Flask backend: /create-xendit-invoice
 import xendit
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify,render_template
 from xendit import Xendit
 import os
 
@@ -28,6 +28,13 @@ def create_invoice():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+
+@app.route('/', methods=['POST'])
+def login():
+    return render_template('login.html')
+@app.route('/dashboard', methods=['POST'])
+def dashboard():
+    return render_template('dashboard.html')
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5001, debug=True)
