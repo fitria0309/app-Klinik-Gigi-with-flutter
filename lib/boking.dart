@@ -37,7 +37,7 @@ class _BookingMenuState extends State<BookingMenu> {
 
     try {
       final response = await supabase
-          .from('boking') // nama tabelmu
+          .from('booking') // nama tabelmu
           .select()
           .eq('user_id', user.id)
           .order('created_at', ascending: false);
@@ -62,8 +62,7 @@ class _BookingMenuState extends State<BookingMenu> {
       case 'menunggu pembayaran':
       case 'menunggu konfirmasi':
         return Colors.red;
-      case 'selesai':
-      case 'sudah dikonfirmasi':
+      case 'pembayaran berhasil':
         return Colors.green;
       default:
         return Colors.grey;
@@ -137,7 +136,7 @@ class _BookingMenuState extends State<BookingMenu> {
   Future<void> updateBookingStatus(int bookingId, String newStatus) async {
     try {
       final response = await supabase
-          .from('boking')
+          .from('booking')
           .update({'status':  'Pembayaran Berhasil'})
           .eq('id', bookingId);
 
