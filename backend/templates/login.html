@@ -13,8 +13,6 @@
     <div class="container-login">
         <div class="login-card text-center">
         <h4>Login Admin</h4>
-
-        <!-- Flash messages
         {% with messages = get_flashed_messages(with_categories=true) %}
           {% if messages %}
             {% for category, message in messages %}
@@ -26,8 +24,8 @@
               {% endif %}
             {% endfor %}
           {% endif %}
-        {% endwith %} -->
-        <form action="{{ url_for('dashboard') }}" method="post">
+        {% endwith %}
+        <form action="{{ url_for('login') }}" method="post">
             <div class="mb-3 text-start">
             <label for="email" class="form-label">Email</label>
             <div class="input-group">

@@ -10,75 +10,47 @@
 </head>
 <body>
   {% include "sidebar.html" %}
+  
   <div class="container py-5">
-    <!-- Tabel Akun Admin -->
-    <div class="card p-4 shadow-sm mb-4">
-      <h5 class="text-center">Daftar Akun Admin</h5>
-      <div class="table-responsive">
-        <table class="table table-striped align-middle mt-3">
-          <thead class="thead-dark">
-            <tr>
-              <th scope="col">Email</th>
-              <th scope="col">UID</th>
-              <th scope="col">Aksi</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for user in users %}
-            <tr>
-              <td>{{ user['email'] }}</td>
-              <td>{{ user['id'] }}</td>
-              <td>
-                <!-- Tombol Edit -->
-                <button class="btn btn-sm btn-warning mb-1" data-bs-toggle="modal" data-bs-target="#editModal{{ user['id'] }}">Edit</button>
-
-                <!-- Tombol Hapus -->
-                <form action="{{ url_for('delete_user') }}" method="POST" class="d-inline">
-                  <input type="hidden" name="uid" value="{{ user['id'] }}">
-                  <button type="submit" class="btn btn-sm btn-danger mb-1" onclick="return confirm('Yakin ingin menghapus akun ini?')">Hapus</button>
-                </form>
-
-                <!-- Modal Edit -->
-                <div class="modal fade" id="editModal{{ user['id'] }}" tabindex="-1" aria-labelledby="editModalLabel{{ user['id'] }}" aria-hidden="true">
-                  <div class="modal-dialog">
-                    <form action="{{ url_for('edit_user') }}" method="POST" class="modal-content">
-                      <div class="modal-header">
-                        <h5 class="modal-title" id="editModalLabel{{ user['id'] }}">Edit Akun</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                      </div>
-                      <div class="modal-body">
-                        <input type="hidden" name="uid" value="{{ user['id'] }}">
-                        <div class="mb-3">
-                          <label class="form-label">Email</label>
-                          <input type="email" name="email" value="{{ user['email'] }}" class="form-control" required>
-                        </div>
-                        <div class="mb-3">
-                          <label class="form-label">Nama <small class="text-muted">(opsional)</small></label>
-                          <input type="nama" name="nama" class="form-control">
-                        </div>
-                        <div class="mb-3">
-                          <label class="form-label">Password Baru <small class="text-muted">(opsional)</small></label>
-                          <input type="password" name="new_password" class="form-control">
-                        </div>
-                      </div>
-                      <div class="modal-footer">
-                        <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
-                      </div>
-                    </form>
-                  </div>
-                </div>
-              </td>
-            </tr>
-            {% else %}
-            <tr>
-              <td colspan="3" class="text-center">Tidak ada data</td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
+    <h2 class="mb-4 text-center">Dashboard Admin</h2>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          {% if 'admin' in category %}
+            <div class="alert alert-{{ 'success' if 'success' in category else 'danger' }} alert-dismissible fade show" role="alert">
+              {{ message }}
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+          {% endif %}
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+    <div class="card shadow-sm mb-4">
+      <div class="card-body">
+        <h5 class="card-title mb-3">Tambah Akun Admin</h5>
+        <form action="{{ url_for('admin_add') }}" method="POST" enctype="multipart/form-data">
+        <div class="mb-3">
+          <label for="nama" class="form-label">Nama</label>
+          <input type="text" name="nama" id="nama" class="form-control" required>
+        </div>
+        <div class="mb-3">
+          <label for="email" class="form-label">Email</label>
+          <input type="email" name="email" id="email" class="form-control" required>
+        </div>
+        <div class="mb-3">
+          <label for="password" class="form-label">Password</label>
+          <input type="password" name="password" id="password" class="form-control" required>
+        </div>
+        <div class="mb-3">
+          <label for="foto" class="form-label">Foto</label>
+          <input type="file" name="foto" id="foto" class="form-control" accept="image/*" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Tambah Akun</button>
+      </form>
       </div>
     </div>
   </div>
+
   <!-- Bootstrap JS agar modal berfungsi -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>

@@ -39,12 +39,12 @@
 
     <ul class="navbar-menu">
       <li><a href="{{ url_for('dashboard') }}" class="{% if request.path == '/dashboard' %}active{% endif %}">Tambah Akun Admin</a></li>
-      <li><a href="" class="">Liat Akun Admin</a></li>
-      <li><a href="" class="">Daftar Booking</a></li>
+      <li><a href="{{ url_for('akun_admin') }}" class="{% if request.path == '/akun_admin' %}active{% endif %}">Liat Akun Admin</a></li>
+      <li><a href="{{ url_for('konfirmasi_booking') }}" class="{% if request.path == '/konfirmasi_booking' %}active{% endif %}">Daftar Booking</a></li>
     </ul>
     <div class="logout-section" style="width: 100%; margin-top: auto;">
     <ul class="navbar-menu">
-       <form action="" method="post" style="margin: 0;">
+       <form action="{{ url_for('logout') }}" method="post" style="margin: 0;">
         <button type="submit" style="width: 100%; background-color: #e53935; border: none; color: white; padding: 10px 15px; border-radius: 4px; font-weight: 600;">
           Logout
         </button>
