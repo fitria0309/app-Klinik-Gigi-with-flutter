@@ -120,7 +120,7 @@ body {
         left: 0;
         width: 100%;
         z-index: 999;
-        background-color: #721585;
+        background-color: #b15ae0;
         color: white;
         text-align: left;
       }
@@ -132,7 +132,7 @@ body {
         right: -250px;
         width: 250px;
         height: 100vh;
-        background-color: #721585;
+        background-color: #b15ae0;
         box-shadow: -2px 0 5px rgba(0, 0, 0, 0.2);
         transition: right 0.3s ease-in-out;
       }

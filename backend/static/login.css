@@ -25,15 +25,15 @@ body {
   
   .form-control:focus {
     box-shadow: none;
-    border-color: #74ebd5;
+    border-color: #b15ae0;
   }
   
   .btn-primary {
-    background-color: #74ebd5;
+    background-color: #b15ae0;
     border: none;
   }
   
   .btn-primary:hover {
-    background-color: #60d0c7;
+    background-color: #dcb1f8;
   }
   

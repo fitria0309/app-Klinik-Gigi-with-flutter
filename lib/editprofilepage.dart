@@ -50,13 +50,13 @@ class _EditProfilePageState extends State<EditProfilePage> {
       final newEmail = _emailController.text.trim();
       final newPhone = _phoneController.text.trim();
 
-      // TODO: Simpan data ke database / shared preferences sesuai kebutuhan
+     
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Profil berhasil diperbarui')),
       );
 
-      Navigator.pop(context, newName); // hanya kirim nama baru balik
+      Navigator.pop(context, newName); 
     }
   }
 

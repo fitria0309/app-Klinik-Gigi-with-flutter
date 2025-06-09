@@ -30,7 +30,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
-    const Color primaryColor = Color(0xFF7B1FA2); // Ungu elegan
+    const Color primaryColor = Color(0xFF7B1FA2); 
     return Scaffold(
       backgroundColor: Colors.grey[100],
       body: ListView(

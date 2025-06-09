@@ -22,7 +22,7 @@ class PengaturanPage extends StatelessWidget {
             title: 'Notifikasi',
             subtitle: 'Aktifkan atau nonaktifkan notifikasi',
             onTap: () {
-              // Aksi untuk pengaturan notifikasi
+              //pengaturan notifikasi
             },
           ),
           _buildSettingItem(
@@ -30,7 +30,7 @@ class PengaturanPage extends StatelessWidget {
             title: 'Privasi & Keamanan',
             subtitle: 'Ubah kata sandi dan keamanan akun',
             onTap: () {
-              // Aksi untuk pengaturan keamanan
+              // pengaturan keamanan
             },
           ),
           _buildSettingItem(
@@ -46,7 +46,7 @@ class PengaturanPage extends StatelessWidget {
             title: 'Bahasa',
             subtitle: 'Pilih bahasa aplikasi',
             onTap: () {
-              // Aksi pengaturan bahasa
+              // pengaturan bahasa
             },
           ),
           _buildSettingItem(
@@ -54,7 +54,7 @@ class PengaturanPage extends StatelessWidget {
             title: 'Pusat Bantuan',
             subtitle: 'Lihat FAQ atau hubungi admin',
             onTap: () {
-              // Aksi ke halaman bantuan
+              // halaman bantuan
             },
           ),
         ],

@@ -95,6 +95,7 @@ class _SignupPageState extends State<SignupPage> with SingleTickerProviderStateM
 
   @override
   Widget build(BuildContext context) {
+  const Color primaryColor = Color(0xFF7B1FA2); 
     return Scaffold(
       backgroundColor: Colors.white,
       body: Padding(
@@ -121,7 +122,7 @@ class _SignupPageState extends State<SignupPage> with SingleTickerProviderStateM
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30.0),
                     ),
-                    backgroundColor: const Color.fromARGB(255, 7, 89, 253),
+                    backgroundColor: primaryColor,
                   ),
                   onPressed: _isLoading ? null : _signup,
                   child: _isLoading
@@ -134,7 +135,7 @@ class _SignupPageState extends State<SignupPage> with SingleTickerProviderStateM
                   },
                   child: const Text(
                     'Sudah Punya Akun?',
-                    style: TextStyle(color: Colors.blue, fontSize: 16),
+                    style: TextStyle(color: Color.fromARGB(255, 85, 7, 137), fontSize: 16),
                   ),
                 ),
               ],
