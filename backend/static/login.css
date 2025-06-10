@@ -15,12 +15,16 @@ body {
     box-shadow: 0 10px 30px rgba(0,0,0,0.2);
     padding: 40px 30px;
     width: 100%;
-    max-width: 400px;
+    max-width: 500px;
   }
   
   .login-card h4 {
     font-weight: bold;
-    margin-bottom: 20px;
+    /* margin-bottom: 20px; */
+  }
+  .login-card img {
+    max-height: 200px;
+    max-width: 360px;
   }
   
   .form-control:focus {
