@@ -129,8 +129,10 @@
                           <input type="hidden" name="booking_id" value="{{ booking.id }}">
                           <select name="status" class="form-select me-2 status-select" required>
                               <option value="" selected disabled>Pilih Status</option>
+                              <option value="Booking Dibatalkan">Booking Dibatalkan</option>
                               <option value="Pembayaran Berhasil">Pembayaran Berhasil</option>
                               <option value="Selesai">Selesai</option>
+                              
                           </select>
                           <button type="submit" class="btn btn-primary btn-sm update-btn" disabled>Update</button>
                       </form>

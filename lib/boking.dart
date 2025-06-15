@@ -60,6 +60,7 @@ class _BookingMenuState extends State<BookingMenu> {
   Color getStatusColor(String status) {
     switch (status.toLowerCase()) {
       case 'menunggu pembayaran':
+      case 'booking dibatalkan':
       case 'menunggu konfirmasi':
         return Colors.red;
       case 'pembayaran berhasil':

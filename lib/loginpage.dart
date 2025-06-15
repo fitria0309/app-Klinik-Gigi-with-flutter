@@ -36,9 +36,27 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
     final email = _emailController.text.trim();
     final password = _passwordController.text;
 
+    // Validasi input kosong
     if (email.isEmpty || password.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Email atau Password tidak boleh kosong")),
+        const SnackBar(content: Text("Email dan Password tidak boleh kosong")),
+      );
+      return;
+    }
+
+    // Validasi format email
+    final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+    if (!emailRegex.hasMatch(email)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Format email tidak valid")),
+      );
+      return;
+    }
+
+    // Validasi panjang password
+    if (password.length < 6) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Password minimal 6 karakter")),
       );
       return;
     }
@@ -60,14 +78,19 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
             builder: (context) => DashboardPage(username: 'nama'),
           ),
         );
+      } else {
+        // fallback jika user null tanpa error
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Login gagal. Silakan periksa kembali data Anda.")),
+        );
       }
     } on AuthException catch (error) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(error.message)),
+        SnackBar(content: Text("Login gagal: ${error.message}")),
       );
     } catch (_) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Terjadi kesalahan. Coba lagi.")),
+        const SnackBar(content: Text("Terjadi kesalahan. Periksa koneksi internet Anda.")),
       );
     } finally {
       setState(() {
