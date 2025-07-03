@@ -138,8 +138,12 @@ class _PembayaranPageState extends State<PembayaranPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Pembayaran'),
-        backgroundColor: Color(0xFF7B1FA2),
+        title: const Text('Pembayaran' ,
+        style: TextStyle(
+                      fontSize: 26,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF7B1FA2),
+                    ),),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -181,9 +185,10 @@ class _PembayaranPageState extends State<PembayaranPage> {
                 : ElevatedButton(
                     onPressed: _initiatePayment,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: primaryBlue,
+                      backgroundColor: Color(0xFF7B1FA2),
                     ),
-                    child: const Text('Lanjut Bayar'),
+                    child: const Text('Lakukan Pembayaran',
+                    style: TextStyle(color: Color.fromARGB(255, 247, 247, 247)),),
                   ),
           ],
         ),

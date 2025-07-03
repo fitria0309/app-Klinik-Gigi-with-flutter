@@ -20,9 +20,13 @@ class PaymentSuccessPage extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('Pembayaran'),
-        backgroundColor: Color(0xFF7B1FA2),
-        foregroundColor: Colors.white,
+        title: const Text('Pembayaran',
+        style: TextStyle(
+                      fontSize: 26,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF7B1FA2)
+                    ),),
+        backgroundColor: Color.fromARGB(255, 255, 255, 255),
         elevation: 2,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
