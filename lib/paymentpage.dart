@@ -4,8 +4,13 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 class PaymentPage extends StatefulWidget {
   final Map<String, dynamic> service;
+  final String username;
 
-  const PaymentPage({super.key, required this.service});
+  const PaymentPage({
+    super.key,
+    required this.service,
+    required this.username,
+  });
 
   @override
   _PaymentPageState createState() => _PaymentPageState();
@@ -37,14 +42,35 @@ class _PaymentPageState extends State<PaymentPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Gambar Layanan
-            Image.asset(service['image'], width: double.infinity, fit: BoxFit.cover),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: AspectRatio(
+                aspectRatio: 16 / 9,
+                child: Image.network(
+                  service['image'],
+                  width: double.infinity,
+                  fit: BoxFit.contain, // <- Ubah dari cover ke contain
+                  errorBuilder: (context, error, stackTrace) => const Center(
+                    child: Icon(Icons.broken_image, size: 80),
+                  ),
+                  loadingBuilder: (context, child, loadingProgress) {
+                    if (loadingProgress == null) return child;
+                    return const Center(child: CircularProgressIndicator());
+                  },
+                ),
+              ),
+            ),
+
             const SizedBox(height: 16),
 
             // Deskripsi Layanan
-            Text(service['description'], style: const TextStyle(fontSize: 16)),
+            Text(
+              service['description'],
+              style: const TextStyle(fontSize: 16),
+            ),
             const SizedBox(height: 16),
 
-            // Dropdown untuk memilih jenis layanan jika ada
+            // Dropdown Opsi Layanan
             if (service['options'].isNotEmpty)
               DropdownButton<int>(
                 value: _selectedOptionIndex,
@@ -75,9 +101,9 @@ class _PaymentPageState extends State<PaymentPage> {
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: () async {
-                  final selectedOption = service['options'][_selectedOptionIndex];
+                  final selectedOption =
+                      service['options'][_selectedOptionIndex];
                   final selectedPrice = service['price'][_selectedOptionIndex];
-
                   final user = Supabase.instance.client.auth.currentUser;
 
                   if (user == null) {
@@ -89,21 +115,22 @@ class _PaymentPageState extends State<PaymentPage> {
 
                   final bookingData = {
                     'user_id': user.id,
+                    'nama': widget.username,
                     'service_name': service['name'],
                     'option': selectedOption,
                     'price': selectedPrice,
-                    'status': 'Menunggu Pembayaran'
+                    'status': 'Menunggu Pembayaran',
                   };
 
                   try {
-                    await Supabase.instance.client.from('booking').insert(bookingData);
+                    await Supabase.instance.client
+                        .from('booking')
+                        .insert(bookingData);
 
-                    // Tampilkan pesan sukses
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(content: Text('Booking berhasil')),
                     );
 
-                    // Kembali ke halaman sebelumnya
                     Navigator.pop(context);
                   } catch (e) {
                     ScaffoldMessenger.of(context).showSnackBar(

@@ -178,7 +178,7 @@ class _DashboardPageState extends State<DashboardPage> {
                           context,
                           PageRouteBuilder(
                             pageBuilder: (_, __, ___) =>
-                                PaymentPage(service: service),
+                                PaymentPage(service: service,username:  widget.username),
                             transitionsBuilder: (_, anim, __, child) =>
                                 FadeTransition(opacity: anim, child: child),
                           ),
