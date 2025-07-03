@@ -3,6 +3,7 @@ import 'package:my_project_pui/paymentpage.dart';
 import 'package:my_project_pui/profile.dart';
 import 'package:my_project_pui/boking.dart';
 import 'package:my_project_pui/chatpage.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'dart:async';
 
 class DashboardPage extends StatefulWidget {
@@ -20,56 +21,26 @@ class _DashboardPageState extends State<DashboardPage> {
   int _currentBannerIndex = 0;
   bool _showGreeting = true;
 
-  final List<Map<String, dynamic>> services = [
-    {
-      'name': 'Konsultasi dengan Dokter Gigi',
-      'price': [50000],
-      'options': ['Konsultasi Langsung'],
-      'image': 'assets/konsultasi.jpg',
-      'description': 'Pilih layanan konsultasi dengan dokter gigi.'
-    },
-    {
-      'name': 'Pembuatan Gigi Tiruan',
-      'price': [200000, 2500000],
-      'options': ['Acrylik', 'Porcelain'],
-      'image': 'assets/gigitiruan.jpg',
-      'description': 'Pilih bahan untuk pembuatan gigi tiruan.'
-    },
-    {
-      'name': 'Tambalan Gigi',
-      'price': [100000, 150000],
-      'options': ['Depan', 'Belakang'],
-      'image': 'assets/tambal.jpg',
-      'description': 'Pilih jenis tambalan gigi.'
-    },
-    {
-      'name': 'Scalling',
-      'price': [150000],
-      'options': ['Scalling'],
-      'image': 'assets/pembersihan.jpg',
-      'description': 'Pembersihan karang gigi (scalling).'
-    },
-    {
-      'name': 'Pencabutan Gigi',
-      'price': [100000],
-      'options': ['Biasa'],
-      'image': 'assets/cabut.jpg',
-      'description': 'Pencabutan gigi biasa.'
-    },
-    {
-      'name': 'Pemasangan Kawat Gigi',
-      'price': [4000000],
-      'options': ['Pemasangan Kawat Gigi'],
-      'image': 'assets/kawat.jpg',
-      'description': 'Layanan pemasangan kawat gigi.'
-    },
-  ];
+  List<Map<String, dynamic>> services = [];
+  bool isLoadingServices = true;
 
   @override
   void initState() {
     super.initState();
-
     _pageController = PageController(initialPage: 0);
+    _startBannerTimer();
+    _fetchServices();
+
+    Timer(const Duration(seconds: 6), () {
+      if (mounted) {
+        setState(() {
+          _showGreeting = false;
+        });
+      }
+    });
+  }
+
+  void _startBannerTimer() {
     _timer = Timer.periodic(const Duration(seconds: 3), (Timer timer) {
       if (_pageController.hasClients) {
         _currentBannerIndex = (_currentBannerIndex + 1) % 3;
@@ -80,14 +51,23 @@ class _DashboardPageState extends State<DashboardPage> {
         );
       }
     });
+  }
 
-    Timer(const Duration(seconds: 6), () {
-      if (mounted) {
-        setState(() {
-          _showGreeting = false;
-        });
-      }
-    });
+  Future<void> _fetchServices() async {
+    final supabase = Supabase.instance.client;
+
+    try {
+      final response = await supabase.from('services').select();
+      setState(() {
+        services = List<Map<String, dynamic>>.from(response);
+        isLoadingServices = false;
+      });
+    } catch (e) {
+      print('Error fetching services: $e');
+      setState(() {
+        isLoadingServices = false;
+      });
+    }
   }
 
   @override
@@ -113,7 +93,6 @@ class _DashboardPageState extends State<DashboardPage> {
     return SingleChildScrollView(
       child: Column(
         children: [
-          // Banner Slider
           Container(
             margin: const EdgeInsets.all(16),
             height: 200,
@@ -145,8 +124,6 @@ class _DashboardPageState extends State<DashboardPage> {
                     );
                   },
                 ),
-                
-                // Dot Indicator
                 Positioned(
                   bottom: 10,
                   child: Row(
@@ -170,7 +147,6 @@ class _DashboardPageState extends State<DashboardPage> {
             ),
           ),
 
-          // Judul
           Container(
             alignment: Alignment.centerLeft,
             padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -181,67 +157,72 @@ class _DashboardPageState extends State<DashboardPage> {
           ),
           const SizedBox(height: 12),
 
-          // Grid Services
-          GridView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            itemCount: services.length,
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              childAspectRatio: 3 / 4,
-              crossAxisSpacing: 12,
-              mainAxisSpacing: 12,
-            ),
-            itemBuilder: (context, index) {
-              final service = services[index];
-              return GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    PageRouteBuilder(
-                      pageBuilder: (_, __, ___) =>
-                          PaymentPage(service: service),
-                      transitionsBuilder: (_, anim, __, child) =>
-                          FadeTransition(opacity: anim, child: child),
-                    ),
-                  );
-                },
-                child: Card(
-                  elevation: 5,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16)),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Expanded(
-                        child: ClipRRect(
-                          borderRadius:
-                              const BorderRadius.vertical(top: Radius.circular(16)),
-                          child: Image.asset(service['image'], fit: BoxFit.cover),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8),
+          isLoadingServices
+              ? const CircularProgressIndicator()
+              : GridView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  itemCount: services.length,
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    childAspectRatio: 3 / 4,
+                    crossAxisSpacing: 12,
+                    mainAxisSpacing: 12,
+                  ),
+                  itemBuilder: (context, index) {
+                    final service = services[index];
+                    return GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          PageRouteBuilder(
+                            pageBuilder: (_, __, ___) =>
+                                PaymentPage(service: service),
+                            transitionsBuilder: (_, anim, __, child) =>
+                                FadeTransition(opacity: anim, child: child),
+                          ),
+                        );
+                      },
+                      child: Card(
+                        elevation: 5,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16)),
                         child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            Text(
-                              service['name'],
-                              style:
-                                  const TextStyle(fontWeight: FontWeight.bold),
-                              textAlign: TextAlign.center,
+                            Expanded(
+                              child: ClipRRect(
+                                borderRadius: const BorderRadius.vertical(
+                                    top: Radius.circular(16)),
+                                child: Image.network(
+                                  service['image'],
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (_, __, ___) =>
+                                      const Icon(Icons.broken_image),
+                                ),
+                              ),
                             ),
-                            const SizedBox(height: 6),
-                            // Harga tidak ditampilkan di sini
+                            Padding(
+                              padding: const EdgeInsets.all(8),
+                              child: Column(
+                                children: [
+                                  Text(
+                                    service['name'],
+                                    style: const TextStyle(
+                                        fontWeight: FontWeight.bold),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                  const SizedBox(height: 6),
+                                ],
+                              ),
+                            ),
                           ],
                         ),
                       ),
-                    ],
-                  ),
+                    );
+                  },
                 ),
-              );
-            },
-          ),
           const SizedBox(height: 20),
         ],
       ),
@@ -255,7 +236,6 @@ class _DashboardPageState extends State<DashboardPage> {
   Widget _buildProfile() {
     return ProfilePage(username: widget.username);
   }
-
   @override
   Widget build(BuildContext context) {
     const Color primaryColor = Color(0xFF7B1FA2);
@@ -266,10 +246,7 @@ class _DashboardPageState extends State<DashboardPage> {
         automaticallyImplyLeading: false,
         title: _showGreeting
             ? Text('Halo, ${widget.username}')
-            : Image.asset(
-                'assets/logoklinik2.png',
-                height: 150,
-              ),
+            : Image.asset('assets/logoklinik2.png', height: 150),
         backgroundColor: Colors.white,
         foregroundColor: primaryColor,
         elevation: 0,
@@ -280,9 +257,7 @@ class _DashboardPageState extends State<DashboardPage> {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(
-                  builder: (context) => const ChatPage(),
-                ),
+                MaterialPageRoute(builder: (context) => const ChatPage()),
               );
             },
           ),
@@ -303,5 +278,3 @@ class _DashboardPageState extends State<DashboardPage> {
     );
   }
 }
-
-
