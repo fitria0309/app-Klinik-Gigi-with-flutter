@@ -139,7 +139,7 @@ class _PembayaranPageState extends State<PembayaranPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Pembayaran'),
-        backgroundColor: primaryBlue,
+        backgroundColor: Color(0xFF7B1FA2),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

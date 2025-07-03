@@ -20,8 +20,8 @@ class PaymentSuccessPage extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('Payment Successful'),
-        backgroundColor: accentGreen,
+        title: const Text('Pembayaran'),
+        backgroundColor: Color(0xFF7B1FA2),
         foregroundColor: Colors.white,
         elevation: 2,
         leading: IconButton(
@@ -79,12 +79,12 @@ class PaymentSuccessPage extends StatelessWidget {
                   ),
                   const SizedBox(height: 20),
                   const Text(
-                    'Pembayaran Pendaftaran Berhasil!',
+                    'Pembayaran Berhasil!',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 26,
                       fontWeight: FontWeight.bold,
-                      color: Color(0xFF388E3C),
+                      color: Color.fromARGB(255, 38, 179, 57),
                     ),
                   ),
                   const SizedBox(height: 15),
