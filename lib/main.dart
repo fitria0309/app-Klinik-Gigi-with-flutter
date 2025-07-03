@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:my_project_pui/boking.dart';
+import 'package:my_project_pui/payment/paymentPage.dart';
 // import 'package:my_project_pui/loginpage.dart';
 import 'package:my_project_pui/siginuppage.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -30,7 +32,9 @@ class MyApp extends StatelessWidget {
       routes: {
         '/': (context) => LoginPage(),
         '/signup': (context) => SignupPage(),
+        '/boking': (context) => BookingMenu(),
         '/otp': (context) => WaitingConfirmationPage(email: 'dummy@email.com'),
+        '/payment': (context) => PembayaranPage(jenisPelayanan: 'Belum ada ',totalAmount: 100,bokingId: 'askjand1',),
       },
       debugShowCheckedModeBanner: false,
     );

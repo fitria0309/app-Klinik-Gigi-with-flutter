@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:my_project_pui/payment/paymentPage.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:my_project_pui/payment_getway.dart'; // Pastikan PaymentWebView ada di sini
 
 class BookingMenu extends StatefulWidget {
   const BookingMenu({super.key});
@@ -70,69 +70,69 @@ class _BookingMenuState extends State<BookingMenu> {
     }
   }
 
-  Future<bool> handlePaymentTap(Map<String, dynamic> data) async {
-    final orderId = data['order_id'] ?? 'order-${data['id']}';
-    final grossAmount = data['price'];
-    final customerName = 'Nama Customer'; // Ganti jika ada data customer
-    final customerEmail = 'email@example.com'; // Ganti jika ada data email customer
+  // Future<bool> handlePaymentTap(Map<String, dynamic> data) async {
+  //   final orderId = 'user';
+  //   final grossAmount = data['price'];
+  //   final customerName = 'Nama Customer'; 
+  //   final customerEmail = 'email@example.com'; 
 
-    // Tampilkan loading
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (_) => const Center(child: CircularProgressIndicator()),
-    );
+  //   // Tampilkan loading
+  //   showDialog(
+  //     context: context,
+  //     barrierDismissible: false,
+  //     builder: (_) => const Center(child: CircularProgressIndicator()),
+  //   );
 
-    try {
-      final response = await http.post(
-        Uri.parse('http://10.0.2.2:5001/create-xendit-invoice'),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({
-          'order_id': orderId,
-          'gross_amount': grossAmount,
-          'customer_name': customerName,
-          'customer_email': customerEmail,
-          'payment_method': 'BANK_TRANSFER',
-          'bank_code': 'bca',
-        }),
-      );
+  //   try {
+  //     final response = await http.post(
+  //       Uri.parse('http://10.0.2.2:5001/create-xendit-invoice'),
+  //       headers: {'Content-Type': 'application/json'},
+  //       body: jsonEncode({
+  //         'order_id': orderId,
+  //         'gross_amount': grossAmount,
+  //         'customer_name': customerName,
+  //         'customer_email': customerEmail,
+  //         'payment_method': 'BANK_TRANSFER',
+  //         'bank_code': 'bca',
+  //       }),
+  //     );
 
-      Navigator.of(context).pop(); // tutup loading
+  //     Navigator.of(context).pop(); // tutup loading
 
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        final invoiceUrl = data['invoice_url'];
+  //     if (response.statusCode == 200) {
+  //       final data = jsonDecode(response.body);
+  //       final invoiceUrl = data['invoice_url'];
 
-        if (invoiceUrl != null && invoiceUrl is String) {
-          // Buka PaymentWebView dan tunggu hasilnya (true=bayar sukses)
-          final paymentResult = await Navigator.push<bool>(
-            context,
-            MaterialPageRoute(
-              builder: (_) => PaymentWebView(url: invoiceUrl),
-            ),
-          );
+  //       if (invoiceUrl != null && invoiceUrl is String) {
+  //         // Buka PaymentWebView dan tunggu hasilnya (true=bayar sukses)
+  //         final paymentResult = await Navigator.push<bool>(
+  //           context,
+  //           MaterialPageRoute(
+  //             builder: (_) => PaymentWebView(url: invoiceUrl),
+  //           ),
+  //         );
 
-          return paymentResult ?? false;
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('URL invoice tidak valid')),
-          );
-          return false;
-        }
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Gagal membuat invoice: ${response.body}')),
-        );
-        return false;
-      }
-    } catch (e) {
-      Navigator.of(context).pop(); // tutup loading kalau error
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error saat membuat invoice: $e')),
-      );
-      return false;
-    }
-  }
+  //         return paymentResult ?? false;
+  //       } else {
+  //         ScaffoldMessenger.of(context).showSnackBar(
+  //           const SnackBar(content: Text('URL invoice tidak valid')),
+  //         );
+  //         return false;
+  //       }
+  //     } else {
+  //       ScaffoldMessenger.of(context).showSnackBar(
+  //         SnackBar(content: Text('Gagal membuat invoice: ${response.body}')),
+  //       );
+  //       return false;
+  //     }
+  //   } catch (e) {
+  //     Navigator.of(context).pop(); // tutup loading kalau error
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       SnackBar(content: Text('Error saat membuat invoice: $e')),
+  //     );
+  //     return false;
+  //   }
+  // }
 
   Future<void> updateBookingStatus(int bookingId, String newStatus) async {
     try {
@@ -202,33 +202,44 @@ class _BookingMenuState extends State<BookingMenu> {
                           if (status.toLowerCase() == 'menunggu pembayaran') {
                             final bookingId = data['id'];
                             final currentStatus = data['status'];
+                            final grossAmount = data['price'];
 
                             // ✅ Tampilkan id & status saat ini sebelum lanjut
                             print('Booking ID: $bookingId');
                             print('Status sekarang: $currentStatus');
-
                             // ATAU tampilkan ke pengguna pakai dialog
                             await showDialog(
                               context: context,
                               builder: (_) => AlertDialog(
                                 title: const Text('Konfirmasi'),
-                                content: Text('ID Booking: $bookingId\nStatus: $currentStatus'),
+                                content: Text('ID Booking: $bookingId\nStatus: $currentStatus\nHarga: $grossAmount'),
                                 actions: [
                                   TextButton(
-                                    onPressed: () => Navigator.pop(context), // Cancel
+                                    onPressed: () => Navigator.pop(context),
                                     child: const Text('Batal'),
                                   ),
                                   TextButton(
-                                    onPressed: () => Navigator.pop(context, 'lanjut'),
+                                    onPressed: () {
+                                     Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (_) => PembayaranPage(
+                                          jenisPelayanan: data['service_name'] ?? 'Tanpa Nama',
+                                          totalAmount: data['price'],
+                                          bokingId: data['id'],
+                                        ),
+                                      ),
+                                    );
+                                    },
                                     child: const Text('Lanjut Bayar'),
                                   ),
                                 ],
                               ),
                             );
-                            final paid = await handlePaymentTap(data);
-                            if (paid && bookingId != null) {
-                              await updateBookingStatus(bookingId, 'Pembayaran Selesai');
-                            }
+                            // final paid = await handlePaymentTap(data);
+                            // if (paid && bookingId != null) {
+                            //   await updateBookingStatus(bookingId, 'Pembayaran Selesai');
+                            // }
                           }
                         },
                         trailing: status.toLowerCase() == 'Menunggu Pembayaran'
