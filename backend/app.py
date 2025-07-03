@@ -55,7 +55,6 @@ def login():
     if request.method == 'POST':
         email = request.form['email']
         password = request.form['password']
-
         try:
             # Ambil data dari tabel admin berdasarkan email
             response = supabase.table('akun_admin').select('email, password, nama, foto').eq('email', email).execute()
@@ -235,6 +234,86 @@ def update_status_booking():
 
     return redirect(url_for('konfirmasi_booking'))
 
+@app.route('/layanan_add', methods=['GET'])
+def layanan_add():
+    if 'user' not in session:
+        return redirect(url_for('login'))
+
+    return render_template('tambahlayanan.html',
+                           nama_admin=session.get('nama_admin'),
+                           foto_admin=session.get('foto_admin'))
+
+@app.route('/tambah_layanan', methods=['POST'])
+def tambah_layanan():
+    if 'user' not in session:
+        return redirect(url_for('login'))
+
+    try:
+        name = request.form['name']
+        description = request.form['description']
+        price = request.form['price']
+        options = request.form['options']
+        image_file = request.files['image']
+
+        # Validasi dan parsing
+        price_array = [int(p.strip()) for p in price.split(',')]
+        options_array = [opt.strip() for opt in options.split(',')]
+
+        # Simpan gambar ke Supabase Storage
+        filename = secure_filename(name.lower().replace(" ", "_") + "_" + image_file.filename)
+        file_bytes = BytesIO(image_file.read())
+        supabase.storage.from_('layanan').upload(
+            path=filename,
+            file=file_bytes.getvalue(),
+            file_options={"content-type": image_file.mimetype}
+        )
+        signed_url_response = supabase.storage.from_('layanan').create_signed_url(filename, 604800)
+        image_url = signed_url_response['signedURL']
+        # Simpan data ke tabel services
+        data = {
+            "name": name,
+            "description": description,
+            "price": price_array,
+            "options": options_array,
+            "image": image_url
+        }
+
+        supabase.table('services').insert(data).execute()
+        flash('Layanan berhasil ditambahkan!', 'admin_success')
+    except Exception as e:
+        flash('Gagal menambahkan layanan: ' + str(e), 'admin_danger')
+
+    return redirect(url_for('layanan_add'))
+
+@app.route('/layanan_list')
+def layanan_list():
+    if 'user' not in session:
+        return redirect(url_for('login'))
+
+    try:
+        response = supabase.table("services").select("*").execute()
+        layanan = response.data if response.data else []
+    except Exception as e:
+        flash("Gagal mengambil data layanan: " + str(e), "admin_danger")
+        layanan = []
+
+    return render_template("daftar_layanan.html",
+                           nama_admin=session.get('nama_admin'),
+                           foto_admin=session.get('foto_admin'),
+                           layanan=layanan)
+
+
+@app.route('/hapus_layanan', methods=['POST'])
+def hapus_layanan():
+    layanan_id = request.form.get('layanan_id')
+
+    try:
+        supabase.table("services").delete().eq("id", layanan_id).execute()
+        flash("Layanan berhasil dihapus", "admin_success")
+    except Exception as e:
+        flash("Terjadi kesalahan saat menghapus layanan: " + str(e), "admin_danger")
+
+    return redirect(url_for('layanan_list'))
 
 
 @app.route('/logout', methods=['POST'])

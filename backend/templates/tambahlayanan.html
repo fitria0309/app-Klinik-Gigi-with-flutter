@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Tambah Layanan</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        /* Reset dasar */
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(to right, #eef2f3, #f5f7fa);
+            color: #2c3e50;
+        }
+
+        .container {
+            margin-left: 250px;
+            padding: 40px 30px;
+            max-width: 800px;
+        }
+
+        h2 {
+            font-size: 28px;
+            margin-bottom: 25px;
+            background: linear-gradient(to right, #3498db, #2ecc71);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: bold;
+        }
+
+        .inp-form {
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease-in-out;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        input[type="text"],
+        textarea,
+        input[type="file"] {
+            width: 100%;
+            padding: 12px 14px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            background-color: #fdfdfd;
+            transition: border 0.2s ease;
+        }
+
+        input:focus,
+        textarea:focus {
+            border-color: #3498db;
+            outline: none;
+        }
+
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .btn-submit {
+            background: linear-gradient(to right, #3498db, #2ecc71);
+            color: white;
+            padding: 14px 24px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(52, 152, 219, 0.3);
+        }
+
+        .alert {
+            padding: 12px 18px;
+            margin-bottom: 20px;
+            border-radius: 6px;
+            font-size: 15px;
+        }
+
+        .alert.success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .alert.error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+
+        /* Responsif */
+        @media screen and (max-width: 768px) {
+            .container {
+                margin-left: 0;
+                padding: 20px;
+            }
+
+            .inp-form {
+                padding: 20px;
+            }
+
+            h2 {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+
+{% include "sidebar.html" %}
+
+<body>
+    <div class="container">
+        <h2>Tambah Layanan Baru</h2>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert {{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <form clas=".inp-form" action="{{ url_for('tambah_layanan') }}" method="POST" enctype="multipart/form-data">
+            <label>Nama Layanan:</label>
+            <input type="text" name="name" required>
+
+            <label>Deskripsi:</label>
+            <textarea name="description" required></textarea>
+
+            <label>Harga (pisahkan dengan koma jika lebih dari satu):</label>
+            <input type="text" name="price" placeholder="contoh: 50000,150000">
+
+            <label>Opsi (pisahkan dengan koma):</label>
+            <input type="text" name="options" placeholder="contoh: Depan, Belakang">
+
+            <label>Gambar:</label>
+            <input type="file" name="image" accept="image/*" required>
+
+            <button class="btn-submit" type="submit">Tambah Layanan</button>
+        </form>
+    </div>
+</body>
+</html>

@@ -41,6 +41,8 @@
       <li><a href="{{ url_for('dashboard') }}" class="{% if request.path == '/dashboard' %}active{% endif %}">Tambah Akun Admin</a></li>
       <li><a href="{{ url_for('akun_admin') }}" class="{% if request.path == '/akun_admin' %}active{% endif %}">Liat Akun Admin</a></li>
       <li><a href="{{ url_for('konfirmasi_booking') }}" class="{% if request.path == '/konfirmasi_booking' %}active{% endif %}">Daftar Booking</a></li>
+      <li><a href="{{ url_for('layanan_list') }}" class="{% if request.path == '/layanan_list' %}active{% endif %}">Daftar Layanan</a></li>
+      <li><a href="{{ url_for('layanan_add') }}" class="{% if request.path == '/layanan_add' %}active{% endif %}">Tambah Layanan</a></li>
     </ul>
     <div class="logout-section" style="width: 100%; margin-top: auto;">
     <ul class="navbar-menu">
