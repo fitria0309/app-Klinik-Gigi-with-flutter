@@ -115,13 +115,12 @@ def admin_add():
             "password": password,
             "foto": foto_url
         }
-
         supabase.table("akun_admin").insert(data_admin).execute()
         flash('Akun berhasil ditambahkan!', 'admin_success')
     except Exception as e:
         flash('Gagal menambahkan akun: ' + str(e), 'admin_danger')
-
     return redirect(url_for('dashboard'))
+
 def get_all_users():
     url = f"{SUPABASE_URL}/auth/v1/admin/users"
     headers = {
@@ -129,7 +128,6 @@ def get_all_users():
         "Authorization": f"Bearer {SUPABASE_KEY}",
         "Content-Type": "application/json"
     }
-
     response = requests.get(url, headers=headers)
     if response.status_code == 200:
         data = response.json()
@@ -201,7 +199,6 @@ def edit_user():
 def konfirmasi_booking():
     if 'user' not in session:
         return redirect(url_for('login'))
-
     try:
         booking_resp = supabase.table("booking").select("*").execute()
         bookings = booking_resp.data if booking_resp.data else []
